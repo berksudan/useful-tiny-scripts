@@ -63,6 +63,8 @@ rsync --dry-run -avhP --delete \
     --exclude '$RECYCLE.BIN/' \
     --exclude 'System Volume Information' \
     --exclude '.Trash-1000' \
+    --exclude 'Films & Series & Games/Films' \
+    --exclude 'Films & Series & Games/Series' \
     "$source_dir" "./" | grep --color=always "deleting\|$"
 
 echo "-----------------------------"
@@ -76,5 +78,7 @@ echo_question "Proceed with the actual rsync? [y/N]: " && read yn
     --exclude '$RECYCLE.BIN/' \
     --exclude 'System Volume Information' \
     --exclude '.Trash-1000' \
+    --exclude 'Films & Series & Games/Films' \
+    --exclude 'Films & Series & Games/Series' \
     "$source_dir" "./" | grep --color=always "deleting\|$" ;;
     esac
