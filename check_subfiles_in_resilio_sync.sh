@@ -117,10 +117,10 @@ EXCLUDED_DIRS=(
 )
 
 # 1) Trash all but newest in Contacts subdirectory
-BASE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null && pwd)"
+BASE_DIR="$(cd "${1:-.}" >/dev/null && pwd)"
 CONTACTS_DIR="$BASE_DIR/Contacts"
 trash_all_but_newest "$CONTACTS_DIR"
 
 
-# 2) Run find & report from current directory, passing exclusion list
-find_and_report "." "${EXCLUDED_DIRS[@]}"
+# 2) Run find & report from BASE_DIR, passing exclusion list
+find_and_report "$BASE_DIR" "${EXCLUDED_DIRS[@]}"
