@@ -1,4 +1,4 @@
-# Useful Bash Scripts
+# Useful Tiny (Mostly Bash/Python) Scripts
 Some useful and life saving bash scripts are collected here.
 
 ## Attention
