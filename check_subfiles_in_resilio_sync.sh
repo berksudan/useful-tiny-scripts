@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 set -euo pipefail
+trap '[[ $? -eq 0 ]] && { echo; echo "================================="; read -rp "All operation successful, press enter to exit..."; }' EXIT
 
 #===============================================================================
 # Script: maintenance.sh
@@ -123,6 +124,3 @@ trash_all_but_newest "$CONTACTS_DIR"
 
 # 2) Run find & report from current directory, passing exclusion list
 find_and_report "." "${EXCLUDED_DIRS[@]}"
-
-echo
-read -rp "Press Enter to exit..."
