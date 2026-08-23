@@ -105,8 +105,8 @@ trash_all_but_newest() {
 # Main
 #===============================================================================
 
-# Get the name of this script for self-exclusion
-SCRIPT_NAME="$(basename "${BASH_SOURCE[0]}")"
+# Name of this script for self-exclusion (override via $2, else BASH_SOURCE)
+SCRIPT_NAME="${2:-$(basename "${BASH_SOURCE[0]}")}"
 
 # Directories to exclude in find_and_report (basenames)
 EXCLUDED_DIRS=(
