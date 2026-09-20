@@ -35,12 +35,23 @@ class _Artikel(enum.StrEnum):
 class _AuxiliaryVerbChoice(enum.StrEnum):
     HAT = "HAT"
     IST = "IST"
-    BOTH = "HAT/IST"
+    BOTH = "HAT / IST"
 
 
 class _GrammaticalCase(enum.StrEnum):
+    """Case as a SLOT inside `X + Y + Z`; alternation within a slot uses `/`."""
+
     AKKUSATIV = "AKKUSATIV"
     DATIV = "DATIV"
+    BOTH = "AKKUSATIV / DATIV"
+
+
+class _GrammaticalCaseSection(enum.StrEnum):
+    """Case as the WHOLE back; alternation across a whole section uses `|`."""
+
+    AKKUSATIV = "AKKUSATIV"
+    DATIV = "DATIV"
+    BOTH = "AKKUSATIV | DATIV"
 
 
 @dataclasses.dataclass(frozen=True, kw_only=True)
@@ -79,8 +90,16 @@ _CATEGORY_WITH_FORMATS: list[_CardCategoryWithFormat] = [
         format="{STR_GERMAN_1};{STR_GERMAN_2}",
     ),
     _CardCategoryWithFormat(
-        category=CardCategory.AUFFORDERUNG,
-        format="{STR_GERMAN};{STR_ENGLISH}",
+        category=CardCategory.IMPERATIV_DU_FORM,
+        format="{VERB_PRESENT};{STR_GERMAN}",
+    ),
+    _CardCategoryWithFormat(
+        category=CardCategory.IMPERATIV_IHR_FORM,
+        format="{VERB_PRESENT};{STR_GERMAN}",
+    ),
+    _CardCategoryWithFormat(
+        category=CardCategory.IMPERATIV_SIE_FORM,
+        format="{VERB_PRESENT};{STR_GERMAN}",
     ),
     _CardCategoryWithFormat(
         category=CardCategory.DATIVFORM,
@@ -117,6 +136,14 @@ _CATEGORY_WITH_FORMATS: list[_CardCategoryWithFormat] = [
     _CardCategoryWithFormat(
         category=CardCategory.PRAEPOSITION_AKK_DATIV,
         format="{VERB_PRESENT};{VERB_PRESENT} + {PREPOSITION} + {AKK_DAT}",
+    ),
+    _CardCategoryWithFormat(
+        category=CardCategory.DAS_GEGENTEIL_VON,
+        format="{STR_GERMAN_1};{STR_GERMAN_2}",
+    ),
+    _CardCategoryWithFormat(
+        category=CardCategory.PRAEPOSITION_REKTION,
+        format="{STR_GERMAN};{AKK_DAT_SECTION}",
     ),
     _CardCategoryWithFormat(
         category=CardCategory.QUIZFRAGE,
@@ -260,6 +287,9 @@ def resolve_token(token: str) -> str | None:
 
         case "AKK_DAT":
             return _enter_from_options(_GrammaticalCase)
+
+        case "AKK_DAT_SECTION":
+            return _enter_from_options(_GrammaticalCaseSection)
 
         case "PREPOSITION":
             return _enter_from_options(_Preposition)
