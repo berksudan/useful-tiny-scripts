@@ -56,12 +56,6 @@ class AnkiCard(pydantic.BaseModel):
     front: str = pydantic.Field(..., pattern=r"^\S[^:]*: [^:]*\S$")
     back: str = pydantic.Field(..., pattern=r"^\S.*\S$")
 
-    @classmethod
-    def parse_iterable(cls, iterable: typing.Iterable) -> typing.Self:
-        return cls.model_validate(
-            dict(zip(cls.model_fields.keys(), iterable, strict=True))
-        )
-
     @functools.cached_property
     def to_str(self) -> str:
         return f"{self.front};{self.back}"

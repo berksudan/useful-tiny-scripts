@@ -1,10 +1,14 @@
 [project]
 requires-python = ">=3.14"
-name = "anki-card-tooling"
+name = "anki-card-builder"
 version = "0.1.0"
 dependencies = [
-    "ruff==0.17.0",
     "pydantic==2.12.5",
-    "ty==0.0.86",
+]
+
+[dependency-groups]
+dev = [
     "prek>=0.3.2",
+    "ruff==0.17.0",
+    "ty==0.0.86",
 ]

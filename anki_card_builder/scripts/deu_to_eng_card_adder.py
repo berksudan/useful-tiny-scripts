@@ -7,9 +7,12 @@ import pprint
 import re
 import typing
 
-import pydantic
-
 from scripts.shared import AnkiCard, CardCategory
+
+_INPUT_FILE_DELIMITER = "\t"
+_INPUT_FILEPATH = pathlib.Path("input_deck/Deutsche Übung.txt")
+_OUTPUT_FILE_DELIMITER = ";"
+_OUTPUT_FILEPATH = pathlib.Path("output/upserted_translations.csv")
 
 
 class _MetadataTag(enum.StrEnum):
@@ -24,16 +27,8 @@ class _TranslationPair:
     eng: str
 
 
-@dataclasses.dataclass(frozen=True, kw_only=True)
-class _Config:
-    input_file_delimiter: str
-    input_filepath: pathlib.Path
-    output_file_delimiter: str
-    output_filepath: pathlib.Path
-
-
 def _fetch_cards(*, raw_rows: list[list[str]]) -> list[AnkiCard]:
-    ignored_rows: list[list[str]] = []
+    ignored_row_count = 0
     anki_cards: list[AnkiCard] = []
     html_char_pattern: re.Pattern[str] = re.compile(r"&\w+;")
     for row in raw_rows:
@@ -44,16 +39,17 @@ def _fetch_cards(*, raw_rows: list[list[str]]) -> list[AnkiCard]:
         row_first_part, *_ = row
         if any(row_first_part.startswith(pref) for pref in _MetadataTag):
             print(f"[WARN] Skipping metadata {row=}")
-            ignored_rows.append(row)
+            ignored_row_count += 1
             continue
         try:
-            anki_card: AnkiCard = AnkiCard.parse_iterable(row)
-        except (pydantic.ValidationError, ValueError) as err:
+            front, back = row
+            anki_card = AnkiCard(front=front, back=back)
+        except ValueError as err:
             raise ValueError(f"[ERROR] Validation error in `{row=}`") from err
 
         anki_cards.append(anki_card)
 
-    print(f"[INFO] Ignored `{len(ignored_rows)}` rows.")
+    print(f"[INFO] Ignored `{ignored_row_count}` rows.")
     print(f"[INFO] Collected `{len(anki_cards)}` cards.")
     anki_card_categories: list[CardCategory] = [ac.category for ac in anki_cards]
     print(f"[INFO] Collected `{len(set(anki_card_categories))}` categories.")
@@ -62,8 +58,8 @@ def _fetch_cards(*, raw_rows: list[list[str]]) -> list[AnkiCard]:
 
 def _split_strict(s: str, *, delimiter: str) -> typing.Generator[str]:
     for part in s.split(delimiter):
-        if s != s.strip():
-            raise ValueError(f"String=`{s}` has leading or trailing whitespace")
+        if part != part.strip():
+            raise ValueError(f"String=`{part}` has leading or trailing whitespace")
         yield part
 
 
@@ -143,14 +139,8 @@ def _write_upserted_translation_pairs(
 
 
 def run_deu_to_eng_card_adder() -> None:
-    config = _Config(
-        input_file_delimiter="\t",
-        input_filepath=pathlib.Path("input_deck/Deutsche Übung.txt"),
-        output_file_delimiter=";",
-        output_filepath=pathlib.Path("output/upserted_translations.csv"),
-    )
-    with config.input_filepath.open("r", encoding="utf-8") as fp:
-        raw_rows = list(csv.reader(fp, delimiter=config.input_file_delimiter))
+    with _INPUT_FILEPATH.open("r", encoding="utf-8") as fp:
+        raw_rows = list(csv.reader(fp, delimiter=_INPUT_FILE_DELIMITER))
 
     anki_cards: list[AnkiCard] = _fetch_cards(raw_rows=raw_rows)
     deu_to_eng_pairs: list[_TranslationPair] = _fetch_deu_to_eng_pairs(cards=anki_cards)
@@ -163,8 +153,8 @@ def run_deu_to_eng_card_adder() -> None:
         )
 
     _write_upserted_translation_pairs(
-        output_file_delimiter=config.output_file_delimiter,
-        output_filepath=config.output_filepath,
+        output_file_delimiter=_OUTPUT_FILE_DELIMITER,
+        output_filepath=_OUTPUT_FILEPATH,
         deu_to_eng_pairs=deu_to_eng_pairs,
         eng_to_deu_pairs=eng_to_deu_pairs,
     )
