@@ -14,5 +14,5 @@ setup:
     curl -LsSf "https://astral.sh/uv/{{ UV_VERSION }}/install.sh" | sh
     uv venv "{{ VENV_DIR }}" --python "{{ PYTHON_VERSION }}"
     echo "export PYTHONPATH={{ justfile_directory() }}/" >> "{{ VENV_DIR }}/bin/activate"
-    uv pip install --python "{{ VENV_DIR }}" "{{ justfile_directory() }}"
+    uv pip install --python "{{ VENV_DIR }}" -r "{{ justfile_directory() }}/pyproject.toml"
     echo "Activate the virtual environment: source {{ VENV_DIR }}/bin/activate"

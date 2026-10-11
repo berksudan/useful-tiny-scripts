@@ -66,7 +66,7 @@ class _Logger:
         print("[INFO] ", *args)
 
     @staticmethod
-    def warn(*args: str) -> None:
+    def warning(*args: str) -> None:
         print("[WARN] ", *args)
 
     @staticmethod
@@ -323,7 +323,7 @@ def _build_new_card() -> AnkiCard:
         while True:
             if output := resolve_token(token):
                 break
-            LOGGER.warn(f"`{output=}` is invalid, please try again!")
+            LOGGER.warning(f"`{output=}` is invalid, please try again!")
         argument_pairs[token] = output
 
     # TODO: Workaround
@@ -372,7 +372,7 @@ def anki_deutsch_adder(filepath: pathlib.Path):
 
         with open(filepath, "r", encoding="utf-8") as fp:
             print(f"> CURRENT FILE CONTENT:{ColorCode.FORE_YELLOW}", end="")
-            for line in fp.readlines():
+            for line in fp:
                 print("\n  > " + line[:-1], end="")
             print(ColorCode.STYLE_RESET_ALL)
 

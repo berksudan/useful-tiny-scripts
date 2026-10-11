@@ -78,7 +78,7 @@ class AnkiCard(pydantic.BaseModel):
 
     @functools.cached_property
     def category(self) -> CardCategory:
-        card_category_str, front_without_category = self._split_front
+        card_category_str, _ = self._split_front
         return CardCategory(card_category_str)
 
     @functools.cached_property

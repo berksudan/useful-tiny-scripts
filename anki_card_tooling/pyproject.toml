@@ -1,19 +1,10 @@
-[build-system]
-requires = ["setuptools>=61"]
-build-backend = "setuptools.build_meta"
-
 [project]
 requires-python = ">=3.14"
 name = "anki-card-tooling"
-dynamic = ["version"]
+version = "0.1.0"
 dependencies = [
-    "ruff==0.14.11",
+    "ruff==0.17.0",
     "pydantic==2.12.5",
-    "ty==0.0.11",
-    "prek>=0.3.0",
+    "ty==0.0.86",
+    "prek>=0.3.2",
 ]
-
-
-[tool.setuptools]
-packages = []
-py-modules = []

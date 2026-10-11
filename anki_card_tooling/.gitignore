@@ -11,9 +11,6 @@ output/
 
 .idea
 
-*.egg-info
-
 uv.lock
-build
 
 **/__pycache__/*.pyc
