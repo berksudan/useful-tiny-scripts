@@ -1,18 +1,18 @@
-set shell := ["bash", "-cu"]
+set shell := ["bash", "-euo", "pipefail", "-c"]
 
 PYTHON_VERSION := "3.14"
-VENV_DIR := ".venv"
+UV_VERSION := "0.9.1"
+VENV_DIR := justfile_directory() / ".venv"
 
 default:
     @just --list
 
 setup:
     #!/usr/bin/env bash
-    rm -rf {{ VENV_DIR }}
-    curl -LsSf https://astral.sh/uv/0.9.1/install.sh | sh
-    uv venv {{ VENV_DIR }} --python {{ PYTHON_VERSION }}
-    PARENT_DIR=$(pwd)
-    echo "export PYTHONPATH=$PARENT_DIR/" >> .venv/bin/activate
-    source .venv/bin/activate && uv pip install .
-    echo Activate the virtual environment:
-    echo "Run: source {{ VENV_DIR }}/bin/activate"
+    set -euo pipefail
+    rm -rf "{{ VENV_DIR }}"
+    curl -LsSf "https://astral.sh/uv/{{ UV_VERSION }}/install.sh" | sh
+    uv venv "{{ VENV_DIR }}" --python "{{ PYTHON_VERSION }}"
+    echo "export PYTHONPATH={{ justfile_directory() }}/" >> "{{ VENV_DIR }}/bin/activate"
+    uv pip install --python "{{ VENV_DIR }}" "{{ justfile_directory() }}"
+    echo "Activate the virtual environment: source {{ VENV_DIR }}/bin/activate"
