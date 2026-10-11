@@ -11,7 +11,7 @@ Words: $ARGUMENTS
 
 1. Run `.venv/bin/python -m scripts.suggest_anki_cards_cli list` for the categories, their card formats and the translation separator. Never work from memory.
 2. For each word, suggest up to 4 fitting categories from that list. Ask with one multi-select `AskUserQuestion` question per word.
-3. Draft one card per selected category, following its format. For an English translation:
+3. Draft one card per selected category, following its format and writing German nouns with their definite article. For an English translation:
    - Use the single best one. If the meaning depends on context, use the fewest that cover the common senses.
    - Each one must point clearly back to the German word.
    - Start verbs with `to`, and mark `[adj]`, `[adv]` or `[pl]` on the German word and every translation, e.g. `witzig [adj]` → `witty [adj]`.
