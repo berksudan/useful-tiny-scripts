@@ -18,3 +18,4 @@ Words: $ARGUMENTS
    - If a translation is still unclear, add the fewest suffix tags and/or `(e.g. …)` usage examples that make it fully clear.
    - Justify it in one short sentence with 1–2 example sentences, outside the code block.
 4. Pipe the drafts to `.venv/bin/python -m scripts.suggest_anki_cards_cli build` (see `--help` for the input), fix any card it rejects, and print its output unchanged in one code block. Do not write any files.
+5. Copy that same output to the clipboard, keeping the tabs.
