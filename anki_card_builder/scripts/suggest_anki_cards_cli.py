@@ -2,7 +2,6 @@ import argparse
 import collections.abc
 import enum
 import string
-import sys
 import typing
 
 import pydantic
@@ -50,8 +49,8 @@ def _validate_back_separators(*, draft: _DraftCard) -> None:
             raise ValueError("separator count mismatch", separator, draft.back)
 
 
-def _print_validated_rows() -> None:
-    drafts = pydantic.TypeAdapter(list[_DraftCard]).validate_json(sys.stdin.read())
+def _print_validated_rows(*, drafts_json: str) -> None:
+    drafts = pydantic.TypeAdapter(list[_DraftCard]).validate_json(drafts_json)
     for draft in drafts:
         _validate_back_separators(draft=draft)
         card = AnkiCard(front=f"{draft.category}: {draft.front}", back=draft.back)
@@ -79,7 +78,7 @@ def _dispatch_command_from_cli() -> None:
         description=(
             "`list`: print the translation separator and the suggestible "
             "categories with their `front;back` format and an example card. "
-            '`build`: read a JSON list of {"category", "front", "back"} from stdin, '
+            '`build JSON`: take a JSON list of {"category", "front", "back"}, '
             "shaped like each category's example, validate each card and print it "
             "as a tab-separated Google Sheets row. "
             "`lookup WORD...`: print Azure dictionary translations per German word "
@@ -88,15 +87,16 @@ def _dispatch_command_from_cli() -> None:
         )
     )
     parser.add_argument("command", choices=[command.value for command in _Command])
-    parser.add_argument("words", nargs="*")
+    parser.add_argument("inputs", nargs="*")
     arguments = parser.parse_args()
     match _Command(arguments.command):
         case _Command.LIST:
             _print_suggestible_categories()
         case _Command.BUILD:
-            _print_validated_rows()
+            (drafts_json,) = arguments.inputs
+            _print_validated_rows(drafts_json=drafts_json)
         case _Command.LOOKUP:
-            _print_translation_suggestions(german_words=arguments.words)
+            _print_translation_suggestions(german_words=arguments.inputs)
         case unreachable:
             typing.assert_never(unreachable)
 

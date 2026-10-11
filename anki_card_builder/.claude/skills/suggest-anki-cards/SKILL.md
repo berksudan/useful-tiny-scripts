@@ -15,7 +15,7 @@ Words: $ARGUMENTS
    - Run `uv run --env-file .env python -m scripts.suggest_anki_cards_cli lookup <German word>` and treat its candidates as suggestions, weighed by confidence and back-translations against the rules below; stop and show the error if it fails.
    - Use the shortest common equivalent that translates back to this German word, not to a near-synonym. If the meaning depends on context, use the fewest that cover the common senses.
    - Start verbs with `to`, and mark `[adj]`, `[adv]` or `[pl]` on the German word and every translation, e.g. `witzig [adj]` → `witty [adj]`.
-   - If a translation is still unclear, add the fewest suffix tags (such as `[noun]`) and/or `(e.g. …)` usage examples that make it fully clear on the card, without repeating the translation.
+   - If the card could still be read as another of the lookup's back-translations, add the fewest suffix tags (such as `[noun]`) and/or `(e.g. …)` usage examples until it can't, without repeating the translation.
    - Justify each word's translation once, before the code block, in one short sentence with 1–2 translated example sentences.
-4. Pipe the drafts to `.venv/bin/python -m scripts.suggest_anki_cards_cli build` (see `--help` for the input), fix any card it rejects, and print its output unchanged in one code block. Do not write any files.
+4. Pass the drafts as one JSON argument to `.venv/bin/python -m scripts.suggest_anki_cards_cli build` (see `--help` for the input), fix any card it rejects, and print its output unchanged in one code block. Do not write any files.
 5. Copy that same output to the clipboard, keeping the tabs.
