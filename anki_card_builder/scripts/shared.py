@@ -1,3 +1,4 @@
+import dataclasses
 import enum
 import functools
 import typing
@@ -38,24 +39,74 @@ class CardCategory(enum.StrEnum):
 
 TRANSLATION_SEPARATOR = " | "
 
-CATEGORY_TO_FORMAT: dict[CardCategory, str] = {
-    CardCategory.ARTIKEL_PLURAL: "{NOUN_SINGULAR};{ARTIKEL} {NOUN_SINGULAR}, {OPTIONAL_PLURAL}",
-    CardCategory.AKKUSATIVFORM: "{STR_GERMAN_1};{STR_GERMAN_2}",
-    CardCategory.IMPERATIV_DU_FORM: "{VERB_PRESENT};{STR_GERMAN}",
-    CardCategory.IMPERATIV_IHR_FORM: "{VERB_PRESENT};{STR_GERMAN}",
-    CardCategory.IMPERATIV_SIE_FORM: "{VERB_PRESENT};{STR_GERMAN}",
-    CardCategory.DATIVFORM: "{STR_GERMAN_1};{STR_GERMAN_2}",
-    CardCategory.HAT_IST_PERFEKT: "{VERB_PRESENT};{HAT_IST} + {VERB_PERFEKT}",
-    CardCategory.PRAETERITUM_HAT_IST_PERFEKT: "{VERB_PRESENT};{VERB_PRÄTERITUM}, {HAT_IST} + {VERB_PERFEKT}",
-    CardCategory.DEU_TO_ENG_ARTIKEL_PLURAL: "{NOUN_SINGULAR};{STR_ENGLISH}, {ARTIKEL} {NOUN_SINGULAR}, {OPTIONAL_PLURAL}",
-    CardCategory.DEU_TO_ENG: "{STR_GERMAN};{STR_ENGLISH}",
-    CardCategory.KOMPARATIV_SUPERLATIV: "{ADJEKTIV};{ADJEKTIV_KOMPARATIV}, am {ADJEKTIV_SUPERLATIV}",
-    CardCategory.KONJUGATION_ICH_DU_ES: "{VERB_PRESENT};{ICH_DU_ES}",
-    CardCategory.KONJUGATION_WIR_IHR_SIE: "{VERB_PRESENT};{WIR_IHR_SIE}",
-    CardCategory.PRAEPOSITION_AKK_DATIV: "{VERB_PRESENT};{VERB_PRESENT} + {PREPOSITION} + {AKK_DAT}",
-    CardCategory.DAS_GEGENTEIL_VON: "{STR_GERMAN_1};{STR_GERMAN_2}",
-    CardCategory.PRAEPOSITION_REKTION: "{STR_GERMAN};{AKK_DAT_SECTION}",
-    CardCategory.QUIZFRAGE: "{STR_ANY_1};{STR_ANY_2}",
+
+@dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
+class CardFormat:
+    template: str
+    example: str
+
+
+CATEGORY_TO_FORMAT: dict[CardCategory, CardFormat] = {
+    CardCategory.ARTIKEL_PLURAL: CardFormat(
+        template="{NOUN_SINGULAR};{ARTIKEL} {NOUN_SINGULAR}, {OPTIONAL_PLURAL}",
+        example="Brot;das Brot, die Brote",
+    ),
+    CardCategory.AKKUSATIVFORM: CardFormat(
+        template="{STR_GERMAN_1};{STR_GERMAN_2}", example="ich;mich"
+    ),
+    CardCategory.IMPERATIV_DU_FORM: CardFormat(
+        template="{VERB_PRESENT};{STR_GERMAN}", example="helfen;hilf"
+    ),
+    CardCategory.IMPERATIV_IHR_FORM: CardFormat(
+        template="{VERB_PRESENT};{STR_GERMAN}", example="helfen;helft"
+    ),
+    CardCategory.IMPERATIV_SIE_FORM: CardFormat(
+        template="{VERB_PRESENT};{STR_GERMAN}", example="helfen;helfen Sie"
+    ),
+    CardCategory.DATIVFORM: CardFormat(
+        template="{STR_GERMAN_1};{STR_GERMAN_2}", example="ich;mir"
+    ),
+    CardCategory.HAT_IST_PERFEKT: CardFormat(
+        template="{VERB_PRESENT};{HAT_IST} + {VERB_PERFEKT}",
+        example="ab*holen;HAT + abgeholt",
+    ),
+    CardCategory.PRAETERITUM_HAT_IST_PERFEKT: CardFormat(
+        template="{VERB_PRESENT};{VERB_PRÄTERITUM}, {HAT_IST} + {VERB_PERFEKT}",
+        example="spielen;spielte, HAT + gespielt",
+    ),
+    CardCategory.DEU_TO_ENG_ARTIKEL_PLURAL: CardFormat(
+        template="{NOUN_SINGULAR};{STR_ENGLISH}, {ARTIKEL} {NOUN_SINGULAR}, {OPTIONAL_PLURAL}",
+        example="Daumen;thumb, der Daumen, die Daumen",
+    ),
+    CardCategory.DEU_TO_ENG: CardFormat(
+        template="{STR_GERMAN};{STR_ENGLISH}", example="die Jura;law"
+    ),
+    CardCategory.KOMPARATIV_SUPERLATIV: CardFormat(
+        template="{ADJEKTIV};{ADJEKTIV_KOMPARATIV}, am {ADJEKTIV_SUPERLATIV}",
+        example="teuer;teurer, am teuersten",
+    ),
+    CardCategory.KONJUGATION_ICH_DU_ES: CardFormat(
+        template="{VERB_PRESENT};{ICH_DU_ES}",
+        example="mitnehmen;ich nehme mit<br>du nimmst mit<br>er/sie/es nimmt mit",
+    ),
+    CardCategory.KONJUGATION_WIR_IHR_SIE: CardFormat(
+        template="{VERB_PRESENT};{WIR_IHR_SIE}",
+        example="mitnehmen;wir nehmen mit<br>ihr nehmt mit<br>Sie/sie nehmen mit",
+    ),
+    CardCategory.PRAEPOSITION_AKK_DATIV: CardFormat(
+        template="{VERB_PRESENT};{VERB_PRESENT} + {PREPOSITION} + {AKK_DAT}",
+        example="sich interessieren;sich interessieren + FÜR + AKKUSATIV",
+    ),
+    CardCategory.DAS_GEGENTEIL_VON: CardFormat(
+        template="{STR_GERMAN_1};{STR_GERMAN_2}", example="schwierig;einfach | leicht"
+    ),
+    CardCategory.PRAEPOSITION_REKTION: CardFormat(
+        template="{STR_GERMAN};{AKK_DAT_SECTION}", example="bis;AKKUSATIV"
+    ),
+    CardCategory.QUIZFRAGE: CardFormat(
+        template="{STR_ANY_1};{STR_ANY_2}",
+        example="helfen + DATIV or helfen + AKKUSATIV?;helfen + DATIV",
+    ),
 }
 
 

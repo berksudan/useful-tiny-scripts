@@ -215,7 +215,7 @@ def _resolve_token(token: str) -> str | None:
 
 def _build_new_card() -> AnkiCard:
     category = _select_card_category()
-    fmt = CATEGORY_TO_FORMAT[category]
+    fmt = CATEGORY_TO_FORMAT[category].template
     tokens: list[str] = re.findall(r"{(?P<token>.*?)}", fmt)
 
     argument_pairs: dict[str, str] = {}

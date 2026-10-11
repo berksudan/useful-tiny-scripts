@@ -1,5 +1,6 @@
 import argparse
 import enum
+import string
 import sys
 import typing
 
@@ -29,12 +30,27 @@ def _print_suggestible_categories() -> None:
     print(f"Translation separator: {TRANSLATION_SEPARATOR!r}")
     for category, card_format in CATEGORY_TO_FORMAT.items():
         if category is not CardCategory.ENG_TO_DEU:
-            print(f"{category}\t{card_format}")
+            print(f"{category}\t{card_format.template}\te.g. {card_format.example}")
+
+
+def _validate_back_separators(*, draft: _DraftCard) -> None:
+    _, back_template = CATEGORY_TO_FORMAT[draft.category].template.split(";")
+    separators = [
+        literal
+        for literal, _field, _spec, _conversion in string.Formatter().parse(
+            back_template
+        )
+        if literal.strip()
+    ]
+    for separator in separators:
+        if draft.back.count(separator) != back_template.count(separator):
+            raise ValueError("separator count mismatch", separator, draft.back)
 
 
 def _print_validated_rows() -> None:
     drafts = pydantic.TypeAdapter(list[_DraftCard]).validate_json(sys.stdin.read())
     for draft in drafts:
+        _validate_back_separators(draft=draft)
         card = AnkiCard(front=f"{draft.category}: {draft.front}", back=draft.back)
         print(f"{card.category}\t{card.front_without_category}\t{card.back}")
 
@@ -43,9 +59,9 @@ def _dispatch_command_from_cli() -> None:
     parser = argparse.ArgumentParser(
         description=(
             "`list`: print the translation separator and the suggestible "
-            "categories with their card formats. "
-            '`build`: read a JSON list of {"category", "front", "back"} from stdin '
-            "(front without the category prefix), validate each card and print it "
+            "categories with their `front;back` format and an example card. "
+            '`build`: read a JSON list of {"category", "front", "back"} from stdin, '
+            "shaped like each category's example, validate each card and print it "
             "as a tab-separated Google Sheets row."
         )
     )
