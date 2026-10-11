@@ -7,7 +7,7 @@ import pprint
 import re
 import typing
 
-from scripts.shared import AnkiCard, CardCategory
+from scripts.shared import TRANSLATION_SEPARATOR, AnkiCard, CardCategory
 
 _INPUT_FILE_DELIMITER = "\t"
 _INPUT_FILEPATH = pathlib.Path("input_deck/Deutsche Übung.txt")
@@ -69,12 +69,16 @@ def _fetch_deu_to_eng_pairs(*, cards: list[AnkiCard]) -> list[_TranslationPair]:
         match card.category:
             case CardCategory.DEU_TO_ENG:
                 deu_word: str = card.front_without_category
-                for eng_word in _split_strict(card.back, delimiter=" | "):
+                for eng_word in _split_strict(
+                    card.back, delimiter=TRANSLATION_SEPARATOR
+                ):
                     pair = _TranslationPair(deu=deu_word, eng=eng_word)
                     deu_to_eng_pairs.append(pair)
             case CardCategory.DEU_TO_ENG_ARTIKEL_PLURAL:
                 eng_words_part, deu_word, _ = _split_strict(card.back, delimiter=", ")
-                for eng_word in _split_strict(eng_words_part, delimiter=" | "):
+                for eng_word in _split_strict(
+                    eng_words_part, delimiter=TRANSLATION_SEPARATOR
+                ):
                     pair = _TranslationPair(deu=deu_word, eng=eng_word)
                     deu_to_eng_pairs.append(pair)
     return deu_to_eng_pairs
@@ -86,7 +90,9 @@ def _fetch_eng_to_deu_pairs(*, cards: list[AnkiCard]) -> list[_TranslationPair]:
         match card.category:
             case CardCategory.ENG_TO_DEU:
                 eng_word: str = card.front_without_category
-                for deu_word in _split_strict(card.back, delimiter=" | "):
+                for deu_word in _split_strict(
+                    card.back, delimiter=TRANSLATION_SEPARATOR
+                ):
                     pair = _TranslationPair(deu=deu_word, eng=eng_word)
                     eng_to_deu_pairs.append(pair)
     return eng_to_deu_pairs
@@ -130,7 +136,7 @@ def _write_upserted_translation_pairs(
             all_pairs_per_eng_word = deu_eng_pairs + eng_to_eng_deu_pairs.get(
                 eng_word, []
             )
-            deu_words = " | ".join(
+            deu_words = TRANSLATION_SEPARATOR.join(
                 sorted({pair.deu for pair in all_pairs_per_eng_word})
             )
             fp.write(

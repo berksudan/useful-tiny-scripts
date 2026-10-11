@@ -5,7 +5,7 @@ import pathlib
 import re
 import time
 
-from scripts.shared import AnkiCard, CardCategory, ColorCode
+from scripts.shared import CATEGORY_TO_FORMAT, AnkiCard, CardCategory, ColorCode
 
 
 class _Preposition(enum.StrEnum):
@@ -61,26 +61,6 @@ class _Person:
     reflexive_pronoun: str
 
 
-_CATEGORY_TO_FORMAT: dict[CardCategory, str] = {
-    CardCategory.ARTIKEL_PLURAL: "{NOUN_SINGULAR};{ARTIKEL} {NOUN_SINGULAR}, {OPTIONAL_PLURAL}",
-    CardCategory.AKKUSATIVFORM: "{STR_GERMAN_1};{STR_GERMAN_2}",
-    CardCategory.IMPERATIV_DU_FORM: "{VERB_PRESENT};{STR_GERMAN}",
-    CardCategory.IMPERATIV_IHR_FORM: "{VERB_PRESENT};{STR_GERMAN}",
-    CardCategory.IMPERATIV_SIE_FORM: "{VERB_PRESENT};{STR_GERMAN}",
-    CardCategory.DATIVFORM: "{STR_GERMAN_1};{STR_GERMAN_2}",
-    CardCategory.HAT_IST_PERFEKT: "{VERB_PRESENT};{HAT_IST} + {VERB_PERFEKT}",
-    CardCategory.PRAETERITUM_HAT_IST_PERFEKT: "{VERB_PRESENT};{VERB_PRÄTERITUM}, {HAT_IST} + {VERB_PERFEKT}",
-    CardCategory.DEU_TO_ENG_ARTIKEL_PLURAL: "{NOUN_SINGULAR};{STR_ENGLISH}, {ARTIKEL} {NOUN_SINGULAR}, {OPTIONAL_PLURAL}",
-    CardCategory.DEU_TO_ENG: "{STR_GERMAN};{STR_ENGLISH}",
-    CardCategory.KOMPARATIV_SUPERLATIV: "{ADJEKTIV};{ADJEKTIV_KOMPARATIV}, am {ADJEKTIV_SUPERLATIV}",
-    CardCategory.KONJUGATION_ICH_DU_ES: "{VERB_PRESENT};{ICH_DU_ES}",
-    CardCategory.KONJUGATION_WIR_IHR_SIE: "{VERB_PRESENT};{WIR_IHR_SIE}",
-    CardCategory.PRAEPOSITION_AKK_DATIV: "{VERB_PRESENT};{VERB_PRESENT} + {PREPOSITION} + {AKK_DAT}",
-    CardCategory.DAS_GEGENTEIL_VON: "{STR_GERMAN_1};{STR_GERMAN_2}",
-    CardCategory.PRAEPOSITION_REKTION: "{STR_GERMAN};{AKK_DAT_SECTION}",
-    CardCategory.QUIZFRAGE: "{STR_ANY_1};{STR_ANY_2}",
-}
-
 _PERSONS_BY_CONJUGATION_TOKEN: dict[str, tuple[_Person, ...]] = {
     "ICH_DU_ES": (
         _Person(pronoun="ich", reflexive_pronoun="mich"),
@@ -96,7 +76,7 @@ _PERSONS_BY_CONJUGATION_TOKEN: dict[str, tuple[_Person, ...]] = {
 
 
 def _select_card_category() -> CardCategory:
-    categories = list(_CATEGORY_TO_FORMAT)
+    categories = list(CATEGORY_TO_FORMAT)
     print("> Choose a category:")
     for i, category in enumerate(categories):
         print(f"\t* `{i}` for category=`{category}`")
@@ -235,7 +215,7 @@ def _resolve_token(token: str) -> str | None:
 
 def _build_new_card() -> AnkiCard:
     category = _select_card_category()
-    fmt = _CATEGORY_TO_FORMAT[category]
+    fmt = CATEGORY_TO_FORMAT[category]
     tokens: list[str] = re.findall(r"{(?P<token>.*?)}", fmt)
 
     argument_pairs: dict[str, str] = {}
