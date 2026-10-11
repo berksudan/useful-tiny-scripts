@@ -15,5 +15,6 @@ Words: $ARGUMENTS
    - Use the single best one. If the meaning depends on context, use the fewest that cover the common senses.
    - Each one must point clearly back to the German word.
    - Start verbs with `to`, and mark `[adj]`, `[adv]` or `[pl]` on the German word and every translation, e.g. `witzig [adj]` → `witty [adj]`.
+   - If a translation is still unclear, add the fewest suffix tags and/or `(e.g. …)` usage examples that make it fully clear.
    - Justify it in one short sentence with 1–2 example sentences, outside the code block.
 4. Pipe the drafts to `.venv/bin/python -m scripts.suggest_anki_cards_cli build` (see `--help` for the input), fix any card it rejects, and print its output unchanged in one code block. Do not write any files.
