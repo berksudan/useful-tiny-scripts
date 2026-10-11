@@ -15,4 +15,5 @@ setup:
     uv venv "{{ VENV_DIR }}" --python "{{ PYTHON_VERSION }}"
     echo "export PYTHONPATH={{ justfile_directory() }}/" >> "{{ VENV_DIR }}/bin/activate"
     uv pip install --python "{{ VENV_DIR }}" -r "{{ justfile_directory() }}/pyproject.toml"
+    "{{ VENV_DIR }}/bin/prek" install
     echo "Activate the virtual environment: source {{ VENV_DIR }}/bin/activate"
