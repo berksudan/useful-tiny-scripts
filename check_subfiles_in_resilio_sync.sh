@@ -6,8 +6,7 @@ trap '[[ $? -eq 0 ]] && { echo; echo "================================="; read -
 #===============================================================================
 # Script: maintenance.sh
 # Purpose:
-#   1) Search for files excluding certain patterns/directories and report
-#   2) Move all but the newest file in Contacts/ to trash
+#   Search for files excluding certain patterns/directories and report
 #===============================================================================
 
 #------------------------------------------------------------------------------
@@ -76,31 +75,6 @@ find_and_report() {
   fi
 }
 
-#------------------------------------------------------------------------------
-# Function: trash_all_but_newest
-# Description:
-#   Trash all but the most recent file in the given directory (non-recursive).
-# Arguments:
-#   $1 - target directory
-#------------------------------------------------------------------------------
-trash_all_but_newest() {
-  local target_dir="$1"
-
-  if [[ ! -d "$target_dir" ]]; then
-    echo "Error: Directory '$target_dir' not found." >&2
-    return 1
-  fi
-
-  # Find regular files, sort lexicographically, drop the newest (last) and trash the rest
-  find "$target_dir" -maxdepth 1 -type f ! -name '.*' \
-    | sort \
-    | head -n -1 \
-    | while IFS= read -r file; do
-        gio trash "$file"
-        echo "Trashed: $file"
-      done
-}
-
 #===============================================================================
 # Main
 #===============================================================================
@@ -116,11 +90,6 @@ EXCLUDED_DIRS=(
   ".sync"
 )
 
-# 1) Trash all but newest in Contacts subdirectory
+# Run find & report from BASE_DIR, passing exclusion list
 BASE_DIR="$(cd "${1:-.}" >/dev/null && pwd)"
-CONTACTS_DIR="$BASE_DIR/Contacts"
-trash_all_but_newest "$CONTACTS_DIR"
-
-
-# 2) Run find & report from BASE_DIR, passing exclusion list
 find_and_report "$BASE_DIR" "${EXCLUDED_DIRS[@]}"
